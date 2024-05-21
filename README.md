@@ -10,49 +10,6 @@ Your workflow should be:
 
 Or, if you want to see what a semantic model looks like, skip to [Examples](#examples).
 
-## Setup
-
-We currently leverage credentials saved as environment variables. Note, `host` is optional depending on your Snowflake deployment.
-
-A. To find your Account Name, [follow these instructions](https://docs.snowflake.com/en/sql-reference/functions/current_account_name), or execute the following sql command in your account.
-
-```sql
-SELECT CURRENT_ACCOUNT_NAME();
-```
-
-B. To find the host for your account, [follow these instructions](https://docs.snowflake.com/en/user-guide/organizations-connect#connecting-with-a-url).
-* Typically, the account name follows the following format: `https://<orgname>-<account_name>.snowflakecomputing.com`
-
-
-1. To set these on Mac OS/Linux: 
-```bash
-export SNOWFLAKE_ROLE="<your-snowflake-role>"
-export SNOWFLAKE_WAREHOUSE="<your-snowflake-warehouse>"
-export SNOWFLAKE_USER="<your-snowflake-user>"
-export SNOWFLAKE_PASSWORD="<your-snowflake-password>"
-export SNOWFLAKE_HOST="<your-snowflake-host>"
-```
-
-2. To set these on Windows:
-```bash
-set SNOWFLAKE_ROLE=<your-snowflake-role>
-set SNOWFLAKE_WAREHOUSE=<your-snowflake-warehouse>
-set SNOWFLAKE_USER=<your-snowflake-user>
-set SNOWFLAKE_PASSWORD=<your-snowflake-password>
-set SNOWFLAKE_HOST=<your-snowflake-host>
-```
-
-3. To set these within a Python environment:
-```python
-import os
-
-# Setting environment variables
-os.environ['SNOWFLAKE_ROLE'] = '<your-snowflake-role>'
-os.environ['SNOWFLAKE_WAREHOUSE'] = '<your-snowflake-warehouse>'
-os.environ['SNOWFLAKE_USER'] = '<your-snowflake-user>'
-os.environ['SNOWFLAKE_PASSWORD'] = '<your-snowflake-password>'
-os.environ['SNOWFLAKE_HOST'] = '<your-snowflake-host>'
-```
 ## Usage
 
 You may generate a semantic model for a given list of fully qualified tables following the `{database}.{schema}.{table}` format. Each table in this list should be a physical table or a view present in your database.
@@ -63,7 +20,7 @@ All generated semantic models by default are saved either under `semantic_model_
 
 1. Ensure you have installed the Python package. Note, the version below should be the latest version under the `dist/` directory.
 ```bash
-pip install dist/semantic_model_generator-0.1.16-py3-none-any.whl
+pip install -e .
 ```
 2. Activate Python shell
 ```bash
@@ -74,12 +31,10 @@ python
 from semantic_model_generator.generate_model import generate_base_semantic_model_from_snowflake
 
 BASE_TABLES = ['<your-database-name-1>.<your-schema-name-1>.<your-base-table-or-view-name-1>','<your-database-name-2>.<your-schema-name-2>.<your-base-table-or-view-name-2>']
-SNOWFLAKE_ACCOUNT = "<your-snowflake-account>"
 SEMANTIC_MODEL_NAME = "<a-meaningful-semantic-model-name>"
 
 generate_base_semantic_model_from_snowflake(
     base_tables=BASE_TABLES,
-    snowflake_account=SNOWFLAKE_ACCOUNT,
     semantic_model_name=SEMANTIC_MODEL_NAME
 )
 ```
@@ -108,7 +63,7 @@ python -m semantic_model_generator.generate_model \
 
 #### Additional Fields to Fill Out
 
-**Important**: After generation, your YAML files will have a series of lines with `# <FILL-OUT>`. Please take the time to fill these out with your business context. 
+**Important**: After generation, your YAML files will have a series of lines with `# <FILL-OUT>`. Please take the time to fill these out with your business context.
 
 By default, the generated semantic model will contain all columns from the provided tables/views. However, it's highly encouraged to only keep relevant columns and drop any unwanted columns from the generated semantic model.
 

@@ -138,7 +138,7 @@ def _raw_table_to_semantic_context_table(
 
 
 def raw_schema_to_semantic_context(
-    base_tables: List[str], snowflake_account: str, semantic_model_name: str
+    base_tables: List[str], semantic_model_name: str
 ) -> semantic_model_pb2.SemanticModel:
     """
     Converts a list of fully qualified Snowflake table names into a semantic model.
@@ -159,7 +159,6 @@ def raw_schema_to_semantic_context(
     - AssertionError: If no valid tables are found in the specified schema.
     """
     connector = SnowflakeConnector(
-        account_name=snowflake_account,
         ndv_per_column=10,  # number of sample values to pull per column.
         max_workers=1,
     )
@@ -265,7 +264,6 @@ def _to_snake_case(s: str) -> str:
 
 def generate_base_semantic_model_from_snowflake(
     base_tables: List[str],
-    snowflake_account: str,
     semantic_model_name: str,
     output_yaml_path: Optional[str] = None,
 ) -> None:
@@ -292,7 +290,6 @@ def generate_base_semantic_model_from_snowflake(
         write_path = output_yaml_path
     context = raw_schema_to_semantic_context(
         base_tables,
-        snowflake_account=snowflake_account,
         semantic_model_name=semantic_model_name,
     )
 

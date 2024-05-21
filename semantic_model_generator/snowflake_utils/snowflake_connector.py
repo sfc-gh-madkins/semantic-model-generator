@@ -217,11 +217,9 @@ order by 1, 2, c.ordinal_position"""
 class SnowflakeConnector:
     def __init__(
         self,
-        account_name: str,
         ndv_per_column: int = 0,
         max_workers: int = 1,
     ):
-        self.account_name: str = account_name
         self._ndv_per_column = ndv_per_column
         self._max_workers = max_workers
 
@@ -293,20 +291,17 @@ class SnowflakeConnector:
     def _open_connection(
         self, db_name: str, schema_name: Optional[str] = None
     ) -> SnowflakeConnection:
-        connection = snowflake_connection(
-            user=self._get_user(),
-            password=self._get_password(),
-            account=str(self.account_name),
-            role=self._get_role(),
-            warehouse=self._get_warehouse(),
-            host=self._get_host(),
-        )
+        from snowflake.snowpark import Session
+        from snowflake.ml.utils import connection_params
+
+        sp_session = Session.builder.configs(connection_params.SnowflakeLoginOptions()).create()
+        connection = sp_session._conn._conn
         if db_name:
             try:
                 connection.cursor().execute(f"USE DATABASE {db_name}")
             except Exception as e:
                 raise ValueError(
-                    f"Could not connect to database {db_name}. Does the database exist in {self.account_name}?"
+                    f"Could not connect to database {db_name}. Does the database exist?"
                 ) from e
         if schema_name:
             try:
